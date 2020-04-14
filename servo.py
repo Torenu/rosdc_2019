@@ -41,8 +41,7 @@ def calibrate(pi,ESC):
 
 def control(pi,ESC,speed,STEER,angle):
     pi.set_servo_pulsewidth(ESC, speed)
-    pi.set_servo_pulsewidth(STEER,int(16.6666666*angle))
+    pi.set_servo_pulsewidth(STEER,int(17.222222 * angle))
 
 def stop(pi,ESC): #This will stop every action your Pi is performing for ESC ofcourse.
     pi.set_servo_pulsewidth(ESC, 0)
-    pi.stop()
