@@ -35,6 +35,7 @@ TRAPINT = np.array(TRAP, dtype=np.int32)
 cap = cv.VideoCapture(0)
 
 pi, ESC, STEER = setup_gpio()
+p = False
 control(pi, ESC, 1500, STEER, 90)
 time.sleep(1)
 timeout = 0
@@ -58,8 +59,39 @@ while True:
 
         perspective = trans_perspective(binary, TRAP, RECT, SIZE)
         cv.imwrite('home\\pi\\imaaage2.jpg', perspective)
+
+        if detect_stop(perspective):
+            stop(pi, ESC)
+            time.sleep(0.5)
+            #control(pi, ESC, 1548, STEER, 90)
+            #time.sleep(1)
+            p = True
+            continue
+
         left, right = find_left_right(perspective)
+
+        if p:
+            way = input("Куда ехать хозяин?\n")
+
+            if way == "2":
+                control(pi, ESC, 1545, STEER, 90)
+                time.sleep(4)
+                p = False
+                continue
+            elif way == "3":
+                control(pi, ESC, 1545, STEER, 90)
+                time.sleep(1)
+                control(pi, ESC, 1545, STEER, 145)
+                time.sleep(3.2)
+                control(pi, ESC, 1545, STEER, 90)
+                time.sleep(2)
+            elif way == "1":
+                ...
+
+            p = False
+
         err = 0 - ((left + right) // 2 - 200)
+
         if abs(right - left) < 100:
             err = last
         #print(err)
@@ -68,13 +100,15 @@ while True:
         integral += err
         integral = constrain(integral, -10, 10)
 
-        control(pi, ESC, 1544, STEER, 90 + pid)
+        control(pi, ESC, 1545, STEER, 90 + pid)
+        print(pid)
 
         if detect_stop(perspective):
             stop(pi, ESC)
-            time.sleep(5)
-            pi, ESC, STEER = setup_gpio()
-            control(pi, ESC, 1500, STEER, 90)
+            time.sleep(3)
+            control(pi, ESC, 1548, STEER, 90)
+            time.sleep(1)
+            p = True
 
 
 
